@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şanslı Sayı Simülatörü</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        #terminal {
+            background-color: #252525;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 20px;
+            height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .output { white-space: pre-wrap; margin-bottom: 10px; }
+        .success { color: #4CAF50; }
+        .error { color: #F44336; }
+        .warning { color: #FFEB3B; }
+        .info { color: #00BCD4; }
+        .highlight { background-color: #2196F3; color: white; padding: 0 5px; }
+        button {
+            background-color: #9C27B0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>🎲 Şanslı Sayı Simülatörü</h1>
+    <div id="terminal"></div>
+    <button id="startBtn">Sayılar İçin Zar At!</button>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const startBtn = document.getElementById('startBtn');
+        let isRunning = false;
+
+        function printTerminal(text, className = '') {
+            const line = document.createElement('div');
+            line.className = `output ${className}`;
+            line.innerHTML = text;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function rollDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        async function findLuckyNumbers() {
+            isRunning = true;
+            startBtn.disabled = true;
+            const luckyNumbers = new Set();
+            let tur = 0;
+
+            printTerminal('<span class="info">★☆★ Şanslı Sayı Simülatörü ★☆★</span>');
+            printTerminal('<span class="warning">Her sayı için 2 zar atılıyor. 6-6 gelirse şanslı kabul ediliyor...</span>');
+
+            while (luckyNumbers.size < 7) {
+                tur++;
+                printTerminal(`<span class="info">\n⏳ Tur ${tur}:</span>`);
+
+                for (let num = 1; num <= 90; num++) {
+                    if (luckyNumbers.has(num)) continue;
+
+                    const dice1 = rollDice();
+                    const dice2 = rollDice();
+                    const isLucky = dice1 === 6 && dice2 === 6;
+
+                    printTerminal(
+                        `Sayı ${num}: <span class="${isLucky ? 'success' : 'error'}">${dice1}-${dice2}</span>`
+                    );
+
+                    if (isLucky) {
+                        luckyNumbers.add(num);
+                        printTerminal(`<span class="success">🎉 Şanslı sayı: <span class="highlight">${num}</span></span>`);
+                        if (luckyNumbers.size === 7) break;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 30));
+                }
+            }
+
+            // Sonuçlar
+            printTerminal('<span class="info">\n╔════════════════════════════╗</span>');
+            printTerminal('<span class="info">║     ŞANS LİSTESİ (6-6)     ║</span>');
+            printTerminal('<span class="info">╚════════════════════════════╝</span>');
+
+            Array.from(luckyNumbers).sort((a, b) => a - b).forEach((num, i) => {
+                printTerminal(`<span class="warning">${i+1}. <span class="highlight">${num}</span></span>`);
+            });
+
+            printTerminal(`<span class="success">\n✨ Toplam ${tur} turda 7 şanslı sayı bulundu!</span>`);
+            isRunning = false;
+            startBtn.disabled = false;
+        }
+
+        startBtn.addEventListener('click', () => {
+            terminal.innerHTML = '';
+            findLuckyNumbers();
+        });
+    </script>
+</body>
+</html>
