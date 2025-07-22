@@ -26,7 +26,7 @@ Python ile geliştirilmiş, **renkli terminal arayüzüne** sahip şanslı sayı
 
 3. Çalıştırın:
    ```bash
-   python sans_oyunu.py
+   python sayiya-zar-at.py
    ```
 
 ## 📊 Nasıl Çalışır?
@@ -49,4 +49,3 @@ Python ile geliştirilmiş, **renkli terminal arayüzüne** sahip şanslı sayı
 MIT Lisansı - [metatronslove](https://github.com/metatronslove) tarafından geliştirilmiştir.
 
 > ⚠️ Not: Bu proje eğlence amaçlıdır. Gerçek şans oyunlarıyla bağlantısı yoktur.
-```
