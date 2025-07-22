@@ -2,7 +2,9 @@
 
 Python ile geliştirilmiş, **renkli terminal arayüzüne** sahip şanslı sayı belirleme aracı. Sayısal Loto için 6-6 zar kuralına göre şanslı sayılar üretir.
 
-<img src="https://i.imgur.com/JQ9q6W7.gif" width="500" alt="Demo Gif">
+<div align="center">
+  <img src="https://github.com/metatronslove/sayiya-zar-at/raw/main/screenshot.png" width="800" alt="Sistem Ekran Görüntüsü">
+</div>
 
 ## ✨ Özellikler
 - 1-90 arası sayılar için çift zar atma mekanizması
