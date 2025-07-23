@@ -48,6 +48,10 @@
             margin-bottom: 10px;
             width: 100%;
         }
+        .box-title {
+            white-space: nowrap;
+            padding: 0 10px;
+        }
     </style>
 </head>
 <body>
@@ -84,6 +88,32 @@
             terminal.scrollTop = terminal.scrollHeight;
         }
 
+        function createBox(title, contentLines) {
+            // Başlık uzunluğunu hesapla (HTML etiketlerini çıkararak)
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = title;
+            const titleLength = tempDiv.textContent.length;
+            
+            // Kutu genişliğini belirle (başlık + 10 karakter padding)
+            const boxWidth = Math.max(titleLength + 10, 30);
+            const horizontalLine = '═'.repeat(boxWidth - 2);
+            
+            // Kutu üst kısmı
+            let box = `<span class="info">╔${horizontalLine}╗</span><br>`;
+            
+            // Başlık satırı (ortalanmış)
+            const padding = Math.max(Math.floor((boxWidth - titleLength - 2) / 2), 0);
+            const leftSpaces = '&nbsp;'.repeat(padding);
+            const rightSpaces = '&nbsp;'.repeat(boxWidth - titleLength - 2 - padding);
+            
+            box += `<span class="info">║${leftSpaces}<span class="box-title">${title}</span>${rightSpaces}║</span><br>`;
+            
+            // Kutu alt kısmı
+            box += `<span class="info">╚${horizontalLine}╝</span>`;
+            
+            return box;
+        }
+
         function rollDice() {
             return Math.floor(Math.random() * 6) + 1;
         }
@@ -100,11 +130,11 @@
                            diceResults[1] === diceResults[2];
                 case 'fibonacci':
                     const fibNumbers = [1, 2, 3, 5];
-                    return fibNumbers.includes(diceResults[0]) || 
+                    return fibNumbers.includes(diceResults[0]) && 
                            fibNumbers.includes(diceResults[1]);
                 case 'prime':
                     const primes = [2, 3, 5];
-                    return primes.includes(diceResults[0]) || 
+                    return primes.includes(diceResults[0]) && 
                            primes.includes(diceResults[1]);
                 default:
                     return false;
@@ -167,9 +197,8 @@
             }
 
             // Sonuçlar
-            printTerminal('<span class="info">\n╔════════════════════════════╗</span>');
-            printTerminal(`<span class="info">║&nbsp;&nbsp;&nbsp;ŞANS&nbsp;LİSTESİ&nbsp;(${methodSelect.options[methodSelect.selectedIndex].text})&nbsp;&nbsp;&nbsp;║</span>`);
-            printTerminal('<span class="info">╚════════════════════════════╝</span>');
+            const boxTitle = `ŞANS LİSTESİ (${methodSelect.options[methodSelect.selectedIndex].text})`;
+            printTerminal(createBox(boxTitle, ''));
 
             Array.from(luckyNumbers).sort((a, b) => a - b).forEach((num, i) => {
                 printTerminal(`<span class="warning">${i+1}. <span class="highlight">${num}</span></span>`);
@@ -215,9 +244,7 @@
                 .slice(0, 7);
 
             // Sonuçları göster
-            printTerminal('<span class="info">\n╔════════════════════════════╗</span>');
-            printTerminal('<span class="info">║&nbsp;&nbsp;&nbsp;<span class="error">LILITH\'S LUCKY SET</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</span>');
-            printTerminal('<span class="info">╚════════════════════════════╝</span>');
+            printTerminal(createBox('LILITH\'S LUCKY SET', ''));
 
             sortedResults.forEach(([num, freq], index) => {
                 printTerminal(`<span class="warning">${index + 1}. ${num} (Frekans: <span class="success">${freq}</span>)</span>`);
