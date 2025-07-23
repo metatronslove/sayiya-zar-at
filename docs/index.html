@@ -56,7 +56,7 @@
 </head>
 <body>
     <h1>🔮 Lilith's Lucky Number Simulator</h1>
-    
+
     <select id="methodSelect">
         <option value="double6">Klasik 6-6 Yöntemi</option>
         <option value="sum7">Toplam 7 Yöntemi</option>
@@ -64,12 +64,12 @@
         <option value="fibonacci">Fibonacci Yöntemi</option>
         <option value="prime">Asal Sayı Yöntemi</option>
     </select>
-    
+
     <div class="button-container">
         <button id="singleBtn">Sayılar İçin Zar At!</button>
         <button id="analyzeBtn">480 Deney Başlat</button>
     </div>
-    
+
     <div id="terminal"></div>
 
     <script>
@@ -77,7 +77,7 @@
         const singleBtn = document.getElementById('singleBtn');
         const analyzeBtn = document.getElementById('analyzeBtn');
         const methodSelect = document.getElementById('methodSelect');
-        
+
         let isRunning = false;
 
         function printTerminal(text, className = '') {
@@ -93,24 +93,24 @@
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = title;
             const titleLength = tempDiv.textContent.length;
-            
+
             // Kutu genişliğini belirle (başlık + 10 karakter padding)
             const boxWidth = Math.max(titleLength + 10, 30);
             const horizontalLine = '═'.repeat(boxWidth - 2);
-            
+
             // Kutu üst kısmı
             let box = `<span class="info">╔${horizontalLine}╗</span><br>`;
-            
+
             // Başlık satırı (ortalanmış)
-            const padding = Math.max(Math.floor((boxWidth - titleLength - 2) / 2), 0);
+            const padding = Math.max(Math.floor((boxWidth - titleLength - 4) / 2), 0);
             const leftSpaces = '&nbsp;'.repeat(padding);
-            const rightSpaces = '&nbsp;'.repeat(boxWidth - titleLength - 2 - padding);
-            
+            const rightSpaces = '&nbsp;'.repeat(boxWidth - titleLength - 4 - padding);
+
             box += `<span class="info">║${leftSpaces}<span class="box-title">${title}</span>${rightSpaces}║</span><br>`;
-            
+
             // Kutu alt kısmı
             box += `<span class="info">╚${horizontalLine}╝</span>`;
-            
+
             return box;
         }
 
@@ -125,16 +125,16 @@
                 case 'sum7':
                     return diceResults[0] + diceResults[1] === 7;
                 case 'triple':
-                    return diceResults.length === 3 && 
-                           diceResults[0] === diceResults[1] && 
+                    return diceResults.length === 3 &&
+                           diceResults[0] === diceResults[1] &&
                            diceResults[1] === diceResults[2];
                 case 'fibonacci':
                     const fibNumbers = [1, 2, 3, 5];
-                    return fibNumbers.includes(diceResults[0]) && 
+                    return fibNumbers.includes(diceResults[0]) &&
                            fibNumbers.includes(diceResults[1]);
                 case 'prime':
                     const primes = [2, 3, 5];
-                    return primes.includes(diceResults[0]) && 
+                    return primes.includes(diceResults[0]) &&
                            primes.includes(diceResults[1]);
                 default:
                     return false;
@@ -160,7 +160,7 @@
             isRunning = true;
             singleBtn.disabled = true;
             analyzeBtn.disabled = true;
-            
+
             const method = methodSelect.value;
             const diceCount = getDiceCountForMethod(method);
             const luckyNumbers = new Set();
@@ -215,7 +215,7 @@
             isRunning = true;
             singleBtn.disabled = true;
             analyzeBtn.disabled = true;
-            
+
             const method = methodSelect.value;
             const frequencyMap = new Map();
 
@@ -258,16 +258,16 @@
         function singleExperiment(method) {
             const luckyNumbers = new Set();
             const diceCount = getDiceCountForMethod(method);
-            
+
             while (luckyNumbers.size < 7) {
                 for (let num = 1; num <= 90; num++) {
                     if (luckyNumbers.has(num)) continue;
-                    
+
                     const diceResults = [];
                     for (let i = 0; i < diceCount; i++) {
                         diceResults.push(rollDice());
                     }
-                    
+
                     if (isLuckyNumber(method, diceResults)) {
                         luckyNumbers.add(num);
                         if (luckyNumbers.size === 7) break;
