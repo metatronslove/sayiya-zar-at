@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Şanslı Sayı Simülatörü</title>
+    <title>Lilith's Lucky Number Simulator</title>
     <style>
         body {
             background: #1e1e1e;
@@ -24,6 +24,11 @@
         .warning { color: #FFEB3B; }
         .info { color: #00BCD4; }
         .highlight { background-color: #2196F3; color: white; padding: 0 5px; }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
         button {
             background: #9C27B0;
             color: white;
@@ -31,18 +36,44 @@
             padding: 10px 20px;
             font-family: inherit;
             cursor: pointer;
+            flex: 1;
         }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
+        select {
+            background: #333;
+            color: white;
+            border: 1px solid #444;
+            padding: 10px;
+            font-family: inherit;
+            margin-bottom: 10px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <h1>🎲 Şanslı Sayı Simülatörü</h1>
+    <h1>🔮 Lilith's Lucky Number Simulator</h1>
+    
+    <select id="methodSelect">
+        <option value="double6">Klasik 6-6 Yöntemi</option>
+        <option value="sum7">Toplam 7 Yöntemi</option>
+        <option value="triple">Ardışık 3 Zar Yöntemi</option>
+        <option value="fibonacci">Fibonacci Yöntemi</option>
+        <option value="prime">Asal Sayı Yöntemi</option>
+    </select>
+    
+    <div class="button-container">
+        <button id="singleBtn">Sayılar İçin Zar At!</button>
+        <button id="analyzeBtn">480 Deney Başlat</button>
+    </div>
+    
     <div id="terminal"></div>
-    <button id="startBtn">Sayılar İçin Zar At!</button>
 
     <script>
         const terminal = document.getElementById('terminal');
-        const startBtn = document.getElementById('startBtn');
+        const singleBtn = document.getElementById('singleBtn');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const methodSelect = document.getElementById('methodSelect');
+        
         let isRunning = false;
 
         function printTerminal(text, className = '') {
@@ -57,14 +88,56 @@
             return Math.floor(Math.random() * 6) + 1;
         }
 
+        function isLuckyNumber(method, diceResults) {
+            switch(method) {
+                case 'double6':
+                    return diceResults[0] === 6 && diceResults[1] === 6;
+                case 'sum7':
+                    return diceResults[0] + diceResults[1] === 7;
+                case 'triple':
+                    return diceResults.length === 3 && 
+                           diceResults[0] === diceResults[1] && 
+                           diceResults[1] === diceResults[2];
+                case 'fibonacci':
+                    const fibNumbers = [1, 2, 3, 5];
+                    return fibNumbers.includes(diceResults[0]) || 
+                           fibNumbers.includes(diceResults[1]);
+                case 'prime':
+                    const primes = [2, 3, 5];
+                    return primes.includes(diceResults[0]) || 
+                           primes.includes(diceResults[1]);
+                default:
+                    return false;
+            }
+        }
+
+        function getDiceCountForMethod(method) {
+            return method === 'triple' ? 3 : 2;
+        }
+
+        function getMethodDescription(method) {
+            const descriptions = {
+                'double6': 'Her sayı için 2 zar atılıyor. 6-6 gelirse şanslı kabul ediliyor...',
+                'sum7': 'Her sayı için 2 zar atılıyor. Toplamları 7 olursa şanslı kabul ediliyor...',
+                'triple': 'Her sayı için 3 zar atılıyor. Üçü de aynı gelirse şanslı kabul ediliyor...',
+                'fibonacci': 'Her sayı için 2 zar atılıyor. Sonuçlar Fibonacci sayısı (1,2,3,5) ise şanslı kabul ediliyor...',
+                'prime': 'Her sayı için 2 zar atılıyor. Sonuçlar asal sayı (2,3,5) ise şanslı kabul ediliyor...'
+            };
+            return descriptions[method] || '';
+        }
+
         async function findLuckyNumbers() {
             isRunning = true;
-            startBtn.disabled = true;
+            singleBtn.disabled = true;
+            analyzeBtn.disabled = true;
+            
+            const method = methodSelect.value;
+            const diceCount = getDiceCountForMethod(method);
             const luckyNumbers = new Set();
             let tur = 0;
 
-            printTerminal('<span class="info">★☆★ Şanslı Sayı Simülatörü ★☆★</span>');
-            printTerminal('<span class="warning">Her sayı için 2 zar atılıyor. 6-6 gelirse şanslı kabul ediliyor...</span>');
+            printTerminal(`<span class="info">★☆★ Şanslı Sayı Simülatörü (${methodSelect.options[methodSelect.selectedIndex].text}) ★☆★</span>`);
+            printTerminal(`<span class="warning">${getMethodDescription(method)}</span>`);
 
             while (luckyNumbers.size < 7) {
                 tur++;
@@ -73,12 +146,15 @@
                 for (let num = 1; num <= 90; num++) {
                     if (luckyNumbers.has(num)) continue;
 
-                    const dice1 = rollDice();
-                    const dice2 = rollDice();
-                    const isLucky = dice1 === 6 && dice2 === 6;
+                    const diceResults = [];
+                    for (let i = 0; i < diceCount; i++) {
+                        diceResults.push(rollDice());
+                    }
+
+                    const isLucky = isLuckyNumber(method, diceResults);
 
                     printTerminal(
-                        `Sayı ${num}: <span class="${isLucky ? 'success' : 'error'}">${dice1}-${dice2}</span>`
+                        `Sayı ${num}: <span class="${isLucky ? 'success' : 'error'}">${diceResults.join('-')}</span>`
                     );
 
                     if (isLucky) {
@@ -92,7 +168,7 @@
 
             // Sonuçlar
             printTerminal('<span class="info">\n╔════════════════════════════╗</span>');
-            printTerminal('<span class="info">║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ŞANS&nbsp;LİSTESİ&nbsp;(6-6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</span>');
+            printTerminal(`<span class="info">║&nbsp;&nbsp;&nbsp;ŞANS&nbsp;LİSTESİ&nbsp;(${methodSelect.options[methodSelect.selectedIndex].text})&nbsp;&nbsp;&nbsp;║</span>`);
             printTerminal('<span class="info">╚════════════════════════════╝</span>');
 
             Array.from(luckyNumbers).sort((a, b) => a - b).forEach((num, i) => {
@@ -101,12 +177,87 @@
 
             printTerminal(`<span class="success">\n✨ Toplam ${tur} turda 7 şanslı sayı bulundu!</span>`);
             isRunning = false;
-            startBtn.disabled = false;
+            singleBtn.disabled = false;
+            analyzeBtn.disabled = false;
         }
 
-        startBtn.addEventListener('click', () => {
+        async function analyzeExperiments() {
+            if (isRunning) return;
+            isRunning = true;
+            singleBtn.disabled = true;
+            analyzeBtn.disabled = true;
+            
+            const method = methodSelect.value;
+            const frequencyMap = new Map();
+
+            // 1-90 arası tüm sayıları frekans haritasına ekle
+            for (let i = 1; i <= 90; i++) {
+                frequencyMap.set(i, 0);
+            }
+
+            terminal.innerHTML = `<span class="info">★☆★ 480 deney başlatıldı (${methodSelect.options[methodSelect.selectedIndex].text}) ★☆★</span>`;
+
+            for (let i = 1; i <= 480; i++) {
+                if (i % 40 === 0) {
+                    printTerminal(`<span class="warning">⏳ ${i}. deney tamamlandı...</span>`);
+                    await new Promise(r => setTimeout(r, 10));
+                }
+
+                const currentExperiment = singleExperiment(method);
+                currentExperiment.forEach(num => {
+                    frequencyMap.set(num, frequencyMap.get(num) + 1);
+                });
+            }
+
+            // En çok geçen 7 sayı
+            const sortedResults = Array.from(frequencyMap.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 7);
+
+            // Sonuçları göster
+            printTerminal('<span class="info">\n╔════════════════════════════╗</span>');
+            printTerminal('<span class="info">║&nbsp;&nbsp;&nbsp;<span class="error">LILITH\'S LUCKY SET</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;║</span>');
+            printTerminal('<span class="info">╚════════════════════════════╝</span>');
+
+            sortedResults.forEach(([num, freq], index) => {
+                printTerminal(`<span class="warning">${index + 1}. ${num} (Frekans: <span class="success">${freq}</span>)</span>`);
+            });
+
+            isRunning = false;
+            singleBtn.disabled = false;
+            analyzeBtn.disabled = false;
+        }
+
+        function singleExperiment(method) {
+            const luckyNumbers = new Set();
+            const diceCount = getDiceCountForMethod(method);
+            
+            while (luckyNumbers.size < 7) {
+                for (let num = 1; num <= 90; num++) {
+                    if (luckyNumbers.has(num)) continue;
+                    
+                    const diceResults = [];
+                    for (let i = 0; i < diceCount; i++) {
+                        diceResults.push(rollDice());
+                    }
+                    
+                    if (isLuckyNumber(method, diceResults)) {
+                        luckyNumbers.add(num);
+                        if (luckyNumbers.size === 7) break;
+                    }
+                }
+            }
+            return Array.from(luckyNumbers).sort((a, b) => a - b);
+        }
+
+        singleBtn.addEventListener('click', () => {
             terminal.innerHTML = '';
             findLuckyNumbers();
+        });
+
+        analyzeBtn.addEventListener('click', () => {
+            terminal.innerHTML = '';
+            analyzeExperiments();
         });
     </script>
 </body>
