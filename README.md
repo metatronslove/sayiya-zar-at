@@ -49,3 +49,11 @@ Python ile geliştirilmiş, **renkli terminal arayüzüne** sahip şanslı sayı
 MIT Lisansı - [metatronslove](https://github.com/metatronslove) tarafından geliştirilmiştir.
 
 > ⚠️ Not: Bu proje eğlence amaçlıdır. Gerçek şans oyunlarıyla bağlantısı yoktur.
+
+## ☕ Destek Olun / Support
+
+Projemi beğendiyseniz, bana bir kahve ısmarlayarak destek olabilirsiniz!
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/metatronslove)
+
+Teşekkürler! 🙏
